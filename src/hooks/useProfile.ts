@@ -10,7 +10,6 @@ export interface Profile {
   photo_url: string | null;
   linkedin_url: string | null;
   github_url: string | null;
-  email: string | null;
   hero_stats: Array<{ label: string; value: string }>;
 }
 
@@ -18,17 +17,18 @@ export function useProfile() {
   return useQuery<Profile | null>({
     queryKey: ["profile"],
     queryFn: async () => {
+      // Use the profiles_public view which excludes sensitive fields (email)
       const { data, error } = await supabase
-        .from("profiles")
+        .from("profiles_public" as any)
         .select("*")
         .limit(1)
         .maybeSingle();
       if (error) throw error;
       if (!data) return null;
       return {
-        ...data,
-        hero_stats: (data.hero_stats as Array<{ label: string; value: string }>) || [],
-      };
+        ...(data as any),
+        hero_stats: ((data as any).hero_stats as Array<{ label: string; value: string }>) || [],
+      } as Profile;
     },
   });
 }
