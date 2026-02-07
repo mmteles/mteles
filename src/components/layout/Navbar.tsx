@@ -47,7 +47,12 @@ export default function Navbar() {
   }, []);
 
   const handleResumeDownload = () => {
-    window.open("/resume/Mauricio_Teles_Functional_Full.docx", "_blank");
+    const link = document.createElement("a");
+    link.href = "/resume/Mauricio_Teles_Functional_Full.docx";
+    link.download = "Mauricio_Teles_Resume.docx";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
