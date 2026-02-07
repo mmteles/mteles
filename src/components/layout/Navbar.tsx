@@ -46,14 +46,8 @@ export default function Navbar() {
     return () => subscription.unsubscribe();
   }, []);
 
-  const handleResumeDownload = async () => {
-    const { data } = await supabase.storage.from("resume").list();
-    if (data && data.length > 0) {
-      const { data: urlData } = supabase.storage
-        .from("resume")
-        .getPublicUrl(data[0].name);
-      window.open(urlData.publicUrl, "_blank");
-    }
+  const handleResumeDownload = () => {
+    window.open("/resume/Mauricio_Teles_Functional_Full.docx", "_blank");
   };
 
   return (
