@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { Send, Linkedin, Github, Mail, CheckCircle } from "lucide-react";
 import { z } from "zod";
+import { Link } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -220,15 +221,13 @@ export default function Contact() {
                       <span className="text-sm">GitHub</span>
                     </a>
                   )}
-                  {profile?.email && (
-                    <a
-                      href={`mailto:${profile.email}`}
-                      className="flex items-center gap-3 text-muted-foreground hover:text-primary transition-colors"
-                    >
-                      <Mail className="h-5 w-5" />
-                      <span className="text-sm">{profile.email}</span>
-                    </a>
-                  )}
+                  <Link
+                    to="/contact"
+                    className="flex items-center gap-3 text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    <Mail className="h-5 w-5" />
+                    <span className="text-sm">Contact Form</span>
+                  </Link>
                 </div>
               </div>
             </div>

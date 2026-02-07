@@ -7,8 +7,9 @@ export default function Footer() {
   const { data: profile } = useQuery({
     queryKey: ["profile"],
     queryFn: async () => {
-      const { data } = await supabase.from("profiles").select("*").limit(1).maybeSingle();
-      return data;
+      // Use the profiles_public view which excludes sensitive fields (email)
+      const { data } = await supabase.from("profiles_public" as any).select("*").limit(1).maybeSingle();
+      return data as any;
     },
   });
 
