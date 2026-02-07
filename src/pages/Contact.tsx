@@ -67,6 +67,19 @@ export default function Contact() {
     if (error) {
       toast({ title: "Failed to send message. Please try again.", variant: "destructive" });
     } else {
+      // Also send email notification
+      try {
+        await supabase.functions.invoke("send-contact-email", {
+          body: {
+            name: result.data.name,
+            email: result.data.email,
+            subject: result.data.subject,
+            message: result.data.message,
+          },
+        });
+      } catch {
+        // Email is best-effort; message is already saved to DB
+      }
       lastSubmitRef.current = now;
       setSubmitted(true);
       setForm({ name: "", email: "", subject: "", message: "" });

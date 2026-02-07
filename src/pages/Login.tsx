@@ -11,19 +11,35 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const { signIn } = useAuth();
+  const [isSignUp, setIsSignUp] = useState(false);
+  const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await signIn(email, password);
-    if (error) {
-      toast({ title: "Login failed", description: error.message, variant: "destructive" });
+
+    if (isSignUp) {
+      const { error } = await signUp(email, password);
+      if (error) {
+        toast({ title: "Sign up failed", description: error.message, variant: "destructive" });
+      } else {
+        toast({ title: "Account created! Signing you in..." });
+        const { error: signInError } = await signIn(email, password);
+        if (!signInError) {
+          navigate("/admin");
+        }
+      }
     } else {
-      navigate("/admin");
+      const { error } = await signIn(email, password);
+      if (error) {
+        toast({ title: "Login failed", description: error.message, variant: "destructive" });
+      } else {
+        navigate("/admin");
+      }
     }
+
     setLoading(false);
   };
 
@@ -31,7 +47,9 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center bg-muted/50 px-4">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
-          <CardTitle className="font-serif text-2xl">Admin Login</CardTitle>
+          <CardTitle className="font-serif text-2xl">
+            {isSignUp ? "Create Account" : "Admin Login"}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -54,13 +72,24 @@ export default function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                minLength={6}
                 className="mt-1.5"
               />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Signing in..." : "Sign In"}
+              {loading ? "Please wait..." : isSignUp ? "Sign Up" : "Sign In"}
             </Button>
           </form>
+          <p className="text-sm text-center text-muted-foreground mt-4">
+            {isSignUp ? "Already have an account?" : "Need an account?"}{" "}
+            <button
+              type="button"
+              onClick={() => setIsSignUp(!isSignUp)}
+              className="text-primary underline hover:no-underline"
+            >
+              {isSignUp ? "Sign In" : "Sign Up"}
+            </button>
+          </p>
         </CardContent>
       </Card>
     </div>

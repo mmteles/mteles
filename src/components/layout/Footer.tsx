@@ -1,4 +1,5 @@
 import { Linkedin, Github, Mail } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -46,15 +47,13 @@ export default function Footer() {
                 <Github className="h-5 w-5" />
               </a>
             )}
-            {profile?.email && (
-              <a
-                href={`mailto:${profile.email}`}
-                className="opacity-80 hover:opacity-100 transition-opacity"
-                aria-label="Email"
-              >
-                <Mail className="h-5 w-5" />
-              </a>
-            )}
+            <Link
+              to="/contact"
+              className="opacity-80 hover:opacity-100 transition-opacity"
+              aria-label="Contact"
+            >
+              <Mail className="h-5 w-5" />
+            </Link>
           </div>
         </div>
         <div className="mt-8 pt-6 border-t border-primary-foreground/20 text-center">
