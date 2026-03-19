@@ -20,10 +20,13 @@ export default function Projects() {
 
   const filtered = useMemo(() => {
     return projects.filter((p) => {
+      const q = search.toLowerCase();
       const matchSearch =
         !search ||
-        p.title.toLowerCase().includes(search.toLowerCase()) ||
-        p.short_description.toLowerCase().includes(search.toLowerCase());
+        p.title.toLowerCase().includes(q) ||
+        p.short_description.toLowerCase().includes(q) ||
+        p.description.toLowerCase().includes(q) ||
+        p.tags.some((t) => t.toLowerCase().includes(q));
       const matchTag = !activeTag || p.tags.includes(activeTag);
       return matchSearch && matchTag;
     });
