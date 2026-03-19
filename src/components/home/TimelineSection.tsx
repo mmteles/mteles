@@ -1,9 +1,19 @@
-import { motion } from "framer-motion";
-import { Briefcase, GraduationCap } from "lucide-react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Briefcase, GraduationCap, Plus, Minus } from "lucide-react";
 import { useTimeline } from "@/hooks/useTimeline";
 
 export default function TimelineSection() {
   const { data: entries = [] } = useTimeline();
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+
+  const toggleExpand = (id: string) => {
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
 
   return (
     <section id="experience" className="py-20 bg-muted/50">
@@ -23,7 +33,6 @@ export default function TimelineSection() {
         </motion.div>
 
         <div className="relative">
-          {/* Vertical line */}
           <div className="absolute left-6 md:left-1/2 top-0 bottom-0 w-px bg-border md:-translate-x-px" />
 
           <div className="space-y-12">
@@ -31,6 +40,7 @@ export default function TimelineSection() {
               const isLeft = index % 2 === 0;
               const Icon =
                 entry.entry_type === "education" ? GraduationCap : Briefcase;
+              const isExpanded = expandedIds.has(entry.id);
 
               return (
                 <motion.div
@@ -43,12 +53,10 @@ export default function TimelineSection() {
                     isLeft ? "md:flex-row" : "md:flex-row-reverse"
                   }`}
                 >
-                  {/* Icon dot */}
                   <div className="absolute left-6 md:left-1/2 -translate-x-1/2 w-12 h-12 rounded-full bg-primary flex items-center justify-center z-10 shadow-md">
                     <Icon className="h-5 w-5 text-primary-foreground" />
                   </div>
 
-                  {/* Content card */}
                   <div
                     className={`ml-16 md:ml-0 md:w-[calc(50%-3rem)] ${
                       isLeft ? "md:pr-8 md:text-right" : "md:pl-8"
@@ -60,19 +68,46 @@ export default function TimelineSection() {
                         <span>—</span>
                         <span>{entry.end_date || "Present"}</span>
                       </div>
-                      <h3 className="text-lg font-semibold font-sans text-foreground">
-                        {entry.title}
-                      </h3>
-                      <p className="text-sm font-medium text-slate-blue mb-2">
-                        {entry.organization}
-                      </p>
-                      <p className="text-sm text-muted-foreground leading-relaxed">
-                        {entry.description}
-                      </p>
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <h3 className="text-lg font-semibold font-sans text-foreground">
+                            {entry.title}
+                          </h3>
+                          <p className="text-sm font-medium text-slate-blue">
+                            {entry.organization}
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => toggleExpand(entry.id)}
+                          className="shrink-0 mt-1 w-7 h-7 rounded-full bg-primary/10 hover:bg-primary/20 flex items-center justify-center transition-colors"
+                          aria-label={isExpanded ? "Collapse details" : "Expand details"}
+                        >
+                          {isExpanded ? (
+                            <Minus className="h-4 w-4 text-primary" />
+                          ) : (
+                            <Plus className="h-4 w-4 text-primary" />
+                          )}
+                        </button>
+                      </div>
+
+                      <AnimatePresence initial={false}>
+                        {isExpanded && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.3, ease: "easeInOut" }}
+                            className="overflow-hidden"
+                          >
+                            <p className="text-sm text-muted-foreground leading-relaxed mt-3 pt-3 border-t border-border">
+                              {entry.description}
+                            </p>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
                   </div>
 
-                  {/* Spacer for opposite side */}
                   <div className="hidden md:block md:w-[calc(50%-3rem)]" />
                 </motion.div>
               );
